@@ -1,0 +1,6 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Machine-specific: selected run device (with its serial number) and device manager state
+/deploymentTargetSelector.xml
+/deviceManager.xml

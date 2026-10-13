@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Downloads Typst packages (@preview/…) that a bundle uses but doesn't include. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.EPUBstDemo">
+        <!-- Rotation, window resizes and dark mode toggles are handled in place: the open
+             document is recompiled at the new width (or just restyled) instead of the activity
+             being recreated and the bundle re-read. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.EPUBstDemo"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- .epubst has no registered MIME type, so most providers report a generic
+                 zip/binary type for it; accept those from content:// URIs. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="content" />
+                <data android:mimeType="application/octet-stream" />
+                <data android:mimeType="application/zip" />
+                <data android:mimeType="application/x-zip-compressed" />
+                <data android:mimeType="application/epubst+zip" />
+            </intent-filter>
+            <!-- Match by extension where the path is visible (file:// and some content:// URIs).
+                 pathPattern is non-greedy, so dotted names need the extra patterns. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+                <data android:host="*" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.epubst" />
+                <data android:pathPattern=".*\\..*\\.epubst" />
+                <data android:pathPattern=".*\\..*\\..*\\.epubst" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.epubst" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

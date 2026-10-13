@@ -1,0 +1,40 @@
+[package]
+name = "epubst_typst"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+jni = "0.21"
+typst = "0.15.1"
+typst-layout = "0.15.1"
+typst-svg = "0.15.1"
+# Not "embedded-fonts": build.rs embeds Typst's fonts compressed instead (see src/embedded_fonts.rs).
+# universe-packages only adds package storage (unpacking, atomic moves); downloads happen in Kotlin.
+typst-kit = { version = "0.15.1", features = ["scan-fonts", "datetime", "universe-packages"] }
+# Same versions as typst-kit's, for unpacking downloaded package archives and embedded fonts.
+flate2 = { version = "1", features = ["zlib-rs"] }
+tar = "0.4.46"
+
+[build-dependencies]
+typst-assets = { version = "0.15.1", features = ["fonts"] }
+flate2 = { version = "1", features = ["zlib-rs"] }
+
+[profile.release]
+strip = true
+# Whole-program optimization: about 13% smaller than thin LTO (42.3 -> 36.9 MB for arm64),
+# at the cost of a ~30 minute build that needs a lot of memory.
+lto = "fat"
+codegen-units = 1
+# Keep the default panic = "unwind" so panics can be caught at the JNI boundary.
+
+# Used for the app's debug variant: optimized enough to run Typst at a usable speed, but
+# without LTO and with incremental compilation so edits to this crate rebuild quickly.
+[profile.android-dev]
+inherits = "release"
+lto = false
+codegen-units = 256
+incremental = true
